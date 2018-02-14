@@ -92,10 +92,17 @@
         var rightLeg = new THREE.Mesh(legGeo, legMat);
 
         //creating the body it self as a sphere no scene add
-        var theBodyGeo = new THREE.SphereGeometry(6);
+        var theBodyGeo = new THREE.SphereGeometry(12);
         var theBodyMat = new THREE.MeshPhongMaterial({ color: 0x4286f4 });
         var theBody = new THREE.Mesh(theBodyGeo, theBodyMat);
+        
 
+
+        //attaching the legs positions to the body's position
+        leftLeg.position.y = theBody.position.y - 18;
+        rightLeg.position.y = theBody.position.y - 18;
+        leftLeg.position.x = theBody.position.x + 3;
+        rightLeg.position.x = theBody.position.x - 3;
 
 
         //grouping the body
@@ -103,6 +110,10 @@
         player.add(theBody);
         player.add(leftLeg);
         player.add(rightLeg);
+        player.position.y = 35;
+        
+        //adding the player group to the scene
+        scene.add(player);
         
 
         //change camera position and rotation
