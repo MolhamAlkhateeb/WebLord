@@ -48,6 +48,7 @@
     <script src="~/Scripts/lib/three.js"></script>
     <script src="~/Scripts/lib/OrbitControls.js"></script>
     <script>
+        //toradiant function
         function toRadiant(degrees) {
             if (typeof degrees !== "number") {
                 console.warn("the degrees is not a number");
@@ -55,32 +56,68 @@
             }
             return Math.PI / 180 * degrees;
         }
-        var scene = new THREE.Scene();
-        var camera = new THREE.PerspectiveCamera(25, window.innerWidth / window.innerHeight, 0.1, 1000);
 
+        //creating scene and camera
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 5000);
+
+        //creating renderer
         var renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        var directionalLight = new THREE.DirectionalLight(0xffffff, 2);
-        directionalLight.position.set(0,10,10);
+        //creating directional light and adding to the scene
+        var directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(0,10,5);
         scene.add(directionalLight);
 
-        var geometry = new THREE.PlaneGeometry(1000, 1000);
+        //creating plane for ground ,rotating it and adding to the scene
+        var planeGeo = new THREE.PlaneGeometry(1000, 1000);
         var material = new THREE.MeshPhongMaterial({ color: 0x00ff00  });
-        var plane = new THREE.Mesh(geometry, material);
-        plane.rotateX(-90);
+        var plane = new THREE.Mesh(planeGeo, material);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+        plane.rotateX(toRadiant(-90));
         scene.add(plane);
-        camera.position.y = 15;
+
+        //creating box for ground , rotating it and adding to the scene
+        var boxGeo = new THREE.BoxGeometry(10, 100, 100);
+        var boxMat = new THREE.MeshPhongMaterial({ color: 0xff00000 });
+        var groundBox = new THREE.Mesh(boxGeo, boxMat);
+        groundBox.rotateZ(toRadiant(90));
+        scene.add(groundBox);
+
+        //creating two "legs" for the body no scene add
+        var legGeo = new THREE.CylinderGeometry(2, 2, 20);
+        var legMat = new THREE.MeshPhongMaterial({ color: 0xb52b6b });
+        var leftLeg = new THREE.Mesh(legGeo, legMat);
+        var rightLeg = new THREE.Mesh(legGeo, legMat);
+
+        //creating the body it self as a sphere no scene add
+        var theBodyGeo = new THREE.SphereGeometry(6);
+        var theBodyMat = new THREE.MeshPhongMaterial({ color: 0x4286f4 });
+        var theBody = new THREE.Mesh(theBodyGeo, theBodyMat);
+
+
+
+        //grouping the body
+        var player = new THREE.Group();
+        player.add(theBody);
+        player.add(leftLeg);
+        player.add(rightLeg);
+        
+
+        //change camera position and rotation
+        camera.position.y = 1005;
         camera.rotation.set(0, 0, toRadiant(90));
 
+        
+        //adding mouse controlls to the camera
         var controls = new THREE.OrbitControls(camera);
         
         
 
         renderer.setClearColor("#eee");
           
-        
+        //final stage updating the animation frames
         var animate = function () {
             requestAnimationFrame(animate);
 
