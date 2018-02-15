@@ -30,7 +30,7 @@ function setup3D(container) {
 
     camera.position.y = 1005;
     camera.rotation.set(0, 0, toRadiant(90));
-
+    controls.update();
     
 
     //final stage updating the animation frames
