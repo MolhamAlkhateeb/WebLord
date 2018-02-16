@@ -5,11 +5,13 @@
 //The keyword "let" allows us to declare a variable tht is not already declared , it will throw an error if 
 //another variable with the same name is declared earlier , we do this to avoid setting a variable that we dont know
 //that it is already declared
-
+let textureDir = "Content/textures/"
 let scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 5000);
 let renderer = new THREE.WebGLRenderer();
 let controls = new THREE.OrbitControls(camera);
+let textureLoader = new THREE.TextureLoader();
+let loadedTextures = [];
 
 //classes 
 class Player {
@@ -61,7 +63,7 @@ class Player {
             switch (e.key) {
                 case "w":
                     this.moving.forward = false;
-                   
+
                     break;
                 case "a":
                     this.moving.left = false;
@@ -128,7 +130,7 @@ class Player {
 
         //creating the body it self as a sphere no scene add
         var theBodyGeo = new THREE.SphereGeometry(6);
-        var theBodyMat = new THREE.MeshPhongMaterial({ color: 0x4286f4 });
+        var theBodyMat = new THREE.MeshPhongMaterial({ map: getTexture("sea.jpg") });
         var theBody = new THREE.Mesh(theBodyGeo, theBodyMat);
 
 
@@ -154,7 +156,7 @@ class Player {
         if (this.object3D == null) {
             return;
         }
-       
+
         setTimeout(() => {
             if (this.moving.forward) {
                 this.moveForward();
@@ -214,13 +216,25 @@ class Player {
     destroyController() {
         window.removeEventListener('keydown', this._controllerEventKeyDown);
         window.removeEventListener('keyup', this._controllerEventKeyUp);
-        
+
     }
 
 }
 //endclasses
 
+function getTexture(name) {
+    var url = textureDir + name;
+    var exist = loadedTextures.map((item) => { return item.url }).indexOf(url) > -1;
+    if (exist) {
+        var texture = loadedTextures.filter((item) => { return item.url == url })[0].texture;
+        return texture.clone();
+    }
+    else {
+        return textureLoader.load(url, (texture) => { loadedTextures.push({ url: url, texture: texture }) });
+    }
 
+
+}
 function toRadiant(degrees) {
     if (typeof degrees !== "number") {
         console.warn("the degrees is not a number");
@@ -239,7 +253,7 @@ function setup3D(container) {
     camera.position.y = 1005;
     camera.rotation.set(0, 0, toRadiant(90));
     controls.update();
-    
+
 
     //final stage updating the animation frames
     var animate = function () {
@@ -265,14 +279,16 @@ function init() {
 
     //creating plane for ground ,rotating it and adding to the scene
     var planeGeo = new THREE.PlaneGeometry(1000, 1000);
-    var material = new THREE.MeshPhongMaterial({ color: 0x40a4df });
+
+    var material = new THREE.MeshPhongMaterial({ map: getTexture("sea.jpg") });
+    //textureLoader.load(textureDir + "sea.jpg", (texture) => { material.map = texture; material.needsUpdate = true }, );
     var plane = new THREE.Mesh(planeGeo, material);
     plane.rotateX(toRadiant(-90));
     scene.add(plane);
 
     //creating box for ground , rotating it and adding to the scene
     var boxGeo = new THREE.BoxGeometry(10, 100, 100);
-    var boxMat = new THREE.MeshPhongMaterial({ color: 0xff00000 });
+    var boxMat = new THREE.MeshPhongMaterial({ map: getTexture("wood.jpg") });
     var groundBox = new THREE.Mesh(boxGeo, boxMat);
     groundBox.rotateZ(toRadiant(90));
     scene.add(groundBox);
