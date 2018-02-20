@@ -227,14 +227,15 @@ function getTexture(name) {
     var exist = loadedTextures.map((item) => { return item.url }).indexOf(url) > -1;
     if (exist) {
         var texture = loadedTextures.filter((item) => { return item.url == url })[0].texture;
-        return texture.clone();
+        return texture;
     }
     else {
-        return textureLoader.load(url, (texture) => { loadedTextures.push({ url: url, texture: texture }) });
+        var obj = { url: url, texture: textureLoader.load(url) };
+        loadedTextures.push(obj);
+        return obj.texture;
     }
-
-
 }
+
 function toRadiant(degrees) {
     if (typeof degrees !== "number") {
         console.warn("the degrees is not a number");
